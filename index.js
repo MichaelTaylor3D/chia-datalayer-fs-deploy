@@ -4,29 +4,22 @@ const Datalayer = require("chia-datalayer");
 const Wallet = require("chia-wallet");
 const defaultOptions = require("./utils/defaultOptions");
 const changeListGenerator = require("chia-changelist-generator");
-const EventEmitter = require("events");
-const statusEmitter = new EventEmitter();
+const { statusEmitter, logError, logInfo } = require("./utils/console-tools");
 const {
   walkDirAndCreateFileList,
   generateCleanUpChangeList,
 } = require("./utils/fs-utils");
 
-const logInfo = (operationId, message) => {
-  statusEmitter.emit("info", { operationId, message: `🌱 ${message}` });
-};
 
-const logError = (operationId, message) => {
-  statusEmitter.emit("error", { operationId, message: `🔥 ${message}` });
-};
 
 function createOperationEmitter(operationId) {
   return {
     on: (event, listener) => {
       // Wrapper listener to check event's operationId
       const wrappedListener = (data) => {
-       // if (data.operationId === operationId) {
+        if (data.operationId === operationId) {
           listener(data.message);
-       // }
+        }
       };
 
       statusEmitter.on(event, wrappedListener);
@@ -38,65 +31,81 @@ function createOperationEmitter(operationId) {
 }
 
 const deploy = async (storeId, deployDir, options) => {
+  const originalConsoleLog = console.log;
+  
+
   const operationId = Date.now(); // Unique ID for this operation
   const operationEmitter = createOperationEmitter(operationId);
 
-  if (!storeId) {
-    logError(operationId, "Cannot operate on a null store id.");
-    return operationEmitter;
-  }
+  console.log = (...args) => {
+    logInfo(operationId, ...args);
+  };
 
-  if (!fs.existsSync(deployDir)) {
-    logError(
-      operationId,
-      `The directory "${deployDir}" does not exist. Please specify a valid directory.`
-    );
-    return operationEmitter;
-  }
+  return new Promise(async (resolve, reject) => {
+    resolve(operationEmitter);
 
-  try {
-    const settings = { ...defaultOptions, ...options };
-    const wallet = new Wallet(settings);
+    if (!storeId) {
+      logError(operationId, "Cannot operate on a null store id.");
+      return operationEmitter;
+    }
 
-    if (!(await wallet.utils.walletIsSynced(settings))) {
+    if (!fs.existsSync(deployDir)) {
       logError(
         operationId,
-        "The wallet is not synced. Please wait for it to sync and try again."
+        `The directory "${deployDir}" does not exist. Please specify a valid directory.`
       );
       return operationEmitter;
     }
 
-    // Assuming changeListGenerator is defined and configured
-    changeListGenerator.configure(settings);
-    const datalayer = new Datalayer(settings);
+    try {
+      logInfo(operationId, "Starting deploy operation.");
+      const settings = { ...defaultOptions, ...options };
+      const wallet = new Wallet(settings);
 
-    if (!settings.ignore_orphans) {
-      const cleanUpChangeList = await generateCleanUpChangeList(storeId, deployDir, settings);
-      logInfo(operationId, "Cleaning up orphaned files.");
-
-      for (const [index, chunk] of cleanUpChangeList.entries()) {
-        logInfo(
+      if (!(await wallet.utils.walletIsSynced(settings))) {
+        logError(
           operationId,
-          `Sending cleanup chunk #${index + 1} of ${
-            cleanUpChangeList.length
-          } to datalayer.`
+          "The wallet is not synced. Please wait for it to sync and try again."
         );
-
-        await datalayer.updateDataStore({
-          id: storeId,
-          changelist: _.flatten(chunk),
-        });
+        return operationEmitter;
       }
+
+      // Assuming changeListGenerator is defined and configured
+      changeListGenerator.configure(settings);
+      const datalayer = new Datalayer(settings);
+
+      if (!settings.ignore_orphans) {
+        const cleanUpChangeList = await generateCleanUpChangeList(
+          storeId,
+          deployDir,
+          settings
+        );
+        logInfo(operationId, "Cleaning up orphaned files.");
+
+        for (const [index, chunk] of cleanUpChangeList.entries()) {
+          logInfo(
+            operationId,
+            `Sending cleanup chunk #${index + 1} of ${
+              cleanUpChangeList.length
+            } to datalayer.`
+          );
+
+          await datalayer.updateDataStore({
+            id: storeId,
+            changelist: _.flatten(chunk),
+          });
+        }
+      }
+
+      await walkDirAndCreateFileList(deployDir, storeId, settings);
+      logInfo(operationId, "Deploy operation completed successfully.");
+    } catch (error) {
+      console.trace(error);
+      logError(operationId, "Deployment error: " + error.message);
+    } finally {
+      console.log = originalConsoleLog;
     }
-
-    await walkDirAndCreateFileList(deployDir, storeId, settings);
-    logInfo(operationId, "Deploy operation completed successfully.");
-  } catch (error) {
-    console.trace(error);
-    logError(operationId, "Deployment error: " + error.message);
-  }
-
-  return operationEmitter;
+  });
 };
 
 const mirror = async (storeId, options) => {
@@ -149,5 +158,5 @@ const mirror = async (storeId, options) => {
 
 module.exports = {
   deploy,
-  mirror
+  mirror,
 };
