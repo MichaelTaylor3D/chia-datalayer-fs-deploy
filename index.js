@@ -49,7 +49,7 @@ const deploy = async (storeId, deployDir, options) => {
     const settings = { ...defaultOptions, ...options };
     const wallet = new Wallet(settings);
 
-    if (!(await wallet.utils.walletIsSynced())) {
+    if (!(await wallet.utils.walletIsSynced(settings))) {
       logError(
         operationId,
         "The wallet is not synced. Please wait for it to sync and try again."
@@ -103,7 +103,7 @@ const mirror = async (storeId, options) => {
     const settings = { ...defaultOptions, ...options };
     const wallet = new Wallet(settings);
 
-    await wallet.utils.waitForAllTransactionsToConfirm();
+    await wallet.utils.waitForAllTransactionsToConfirm(settings);
 
     const datalayer = new Datalayer(settings);
     let response;
@@ -128,7 +128,7 @@ const mirror = async (storeId, options) => {
       return operationEmitter;
     }
 
-    await wallet.utils.waitForAllTransactionsToConfirm();
+    await wallet.utils.waitForAllTransactionsToConfirm(settings);
     logInfo(operationId, "Mirror added successfully");
   } catch (error) {
     console.trace(error);
