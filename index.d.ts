@@ -31,5 +31,5 @@ declare module "chia-datalayer-fs-deploy" {
     options: Options
   ): OperationEmitter;
 
-  export function mirror(storeId: string, options: Options): OperationEmitter;
+  export function mirror(storeId: string, options?: Options): OperationEmitter;
 }
