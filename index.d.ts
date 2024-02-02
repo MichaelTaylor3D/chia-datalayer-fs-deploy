@@ -28,7 +28,7 @@ declare module "chia-datalayer-fs-deploy" {
   export function deploy(
     storeId: string,
     deployDir: string,
-    options: Options
+    options?: Options
   ): OperationEmitter;
 
   export function mirror(storeId: string, options?: Options): OperationEmitter;
