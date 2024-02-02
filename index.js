@@ -71,7 +71,7 @@ const deploy = async (storeId, deployDir, options) => {
     const datalayer = new Datalayer(settings);
 
     if (!settings.ignore_orphans) {
-      const cleanUpChangeList = await generateCleanUpChangeList();
+      const cleanUpChangeList = await generateCleanUpChangeList(storeId, deployDir, settings);
       logInfo(operationId, "Cleaning up orphaned files.");
 
       for (const [index, chunk] of cleanUpChangeList.entries()) {

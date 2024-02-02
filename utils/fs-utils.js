@@ -5,7 +5,7 @@ const changeListGenerator = require("chia-changelist-generator");
 const { logInfo } = require("./console-tools");
 const { encodeHex } = require("./hex-utils");
 
-async function generateCleanUpChangeList(storeId, deployDir) {
+async function generateCleanUpChangeList(storeId, deployDir, config) {
   const datalayer = new Datalayer(config);
   const fileList = await datalayer.getKeys({ id: storeId });
 
