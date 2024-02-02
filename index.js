@@ -4,11 +4,20 @@ const Datalayer = require("chia-datalayer");
 
 const Wallet = require("chia-wallet");
 const defaultOptions = require("./utils/defaultOptions");
-const { statusEmitter, logInfo, logError } = require("./utils/console-tools");
+const EventEmitter = require("events");
+const statusEmitter = new EventEmitter();
 const {
   walkDirAndCreateFileList,
   generateCleanUpChangeList,
 } = require("./utils/fs-utils");
+
+const logInfo = (operationId, message) => {
+  statusEmitter.emit("info", { operationId, message: `🌱 ${message}` });
+};
+
+const logError = (operationId, message) => {
+  statusEmitter.emit("error", { operationId, message: `🔥 ${message}` });
+};
 
 function createOperationEmitter(operationId) {
   return {

@@ -1,6 +1,6 @@
 {
   "name": "chia-datalayer-fs-deploy",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Filesystem deployer for chia-datalayer",
   "main": "index.js",
   "types": "index.d.ts",
