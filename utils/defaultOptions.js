@@ -1,0 +1,16 @@
+module.exports = {
+  datalayer_host: "https://localhost:8562",
+  wallet_host: "https://localhost:9256",
+  certificate_folder_path: "~/.chia/mainnet/config/ssl",
+  default_wallet_id: 1,
+  default_fee: 300_000_000,
+  default_mirror_coin_amount: 300_000_000,
+  maximum_rpc_payload_size: 26_214_400,
+  web2_gateway_port: 41410,
+  web2_gateway_host: "localhost",
+  forceIp4Mirror: true,
+  mirror_url_override: null,
+  verbose: false,
+  num_files_processed_per_batch: 100,
+  ignore_orphans: false,
+};

@@ -1,0 +1,19 @@
+{
+  "name": "chia-datalayer-fs-deploy",
+  "version": "1.0.0",
+  "description": "Filesystem deployer for chia-datalayer",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Taylor",
+  "license": "ISC",
+  "dependencies": {
+    "chia-changelist-generator": "^1.0.9",
+    "chia-datalayer": "^2.0.13",
+    "chia-wallet": "^1.0.11",
+    "fs-extra": "^11.2.0",
+    "lodash": "^4.17.21"
+  }
+}
