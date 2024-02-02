@@ -82,12 +82,12 @@ async function processFile(filePath, rootDir, storeId, config) {
 async function walkDirAndCreateFileList(
   dirPath,
   storeId,
+  config,
   existingKeys,
   rootDir = dirPath
 ) {
   const files = fs.readdirSync(dirPath);
   let fileList = [];
-  const config = getConfig();
   const datalayer = new Datalayer(config);
   const batchSize = config.num_files_processed_per_batch ?? 100;
 
@@ -102,6 +102,7 @@ async function walkDirAndCreateFileList(
           ...(await walkDirAndCreateFileList(
             filePath,
             storeId,
+            config,
             existingKeys,
             rootDir
           ))
