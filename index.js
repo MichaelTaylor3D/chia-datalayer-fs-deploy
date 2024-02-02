@@ -1,7 +1,6 @@
 const _ = require("lodash");
 const fs = require("fs-extra");
 const Datalayer = require("chia-datalayer");
-
 const Wallet = require("chia-wallet");
 const defaultOptions = require("./utils/defaultOptions");
 const changeListGenerator = require("chia-changelist-generator");
