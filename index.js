@@ -4,6 +4,7 @@ const Datalayer = require("chia-datalayer");
 
 const Wallet = require("chia-wallet");
 const defaultOptions = require("./utils/defaultOptions");
+const changeListGenerator = require("chia-changelist-generator");
 const EventEmitter = require("events");
 const statusEmitter = new EventEmitter();
 const {
