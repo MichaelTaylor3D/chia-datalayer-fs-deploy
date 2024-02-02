@@ -24,9 +24,9 @@ function createOperationEmitter(operationId) {
     on: (event, listener) => {
       // Wrapper listener to check event's operationId
       const wrappedListener = (data) => {
-        if (data.operationId === operationId) {
+       // if (data.operationId === operationId) {
           listener(data.message);
-        }
+       // }
       };
 
       statusEmitter.on(event, wrappedListener);
