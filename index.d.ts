@@ -1,5 +1,3 @@
-import { EventEmitter } from "events";
-
 declare module "chia-datalayer-fs-deploy" {
   export interface Options {
     datalayer_host?: string;
@@ -28,6 +26,7 @@ declare module "chia-datalayer-fs-deploy" {
   export function deploy(
     storeId: string,
     deployDir: string,
+    deployMode: "additive" | "replace",
     options?: Options
   ): OperationEmitter;
 

@@ -30,7 +30,7 @@ function createOperationEmitter(operationId) {
   };
 }
 
-const deploy = async (storeId, deployDir, options) => {
+const deploy = async (storeId, deployDir, deployMode, options) => {
   const originalConsoleLog = console.log;
   
 
@@ -74,13 +74,13 @@ const deploy = async (storeId, deployDir, options) => {
       changeListGenerator.configure(settings);
       const datalayer = new Datalayer(settings);
 
-      if (!settings.ignore_orphans) {
+      if (deployMode === "replace") {
         const cleanUpChangeList = await generateCleanUpChangeList(
           storeId,
           deployDir,
           settings
         );
-        logInfo(operationId, "Cleaning up orphaned files.");
+        logInfo(operationId, "Replacing the existing store with the new data.");
 
         for (const [index, chunk] of cleanUpChangeList.entries()) {
           logInfo(
