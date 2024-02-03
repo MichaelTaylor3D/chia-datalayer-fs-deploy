@@ -98,6 +98,7 @@ const deploy = async (storeId, deployDir, deployMode, options) => {
       }
 
       await walkDirAndCreateFileList(deployDir, storeId, settings);
+      await wallet.utils.waitForAllTransactionsToConfirm(settings);
       logInfo(operationId, "Deploy operation completed successfully.");
     } catch (error) {
       console.trace(error);
